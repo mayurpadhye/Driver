@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context=".payment.AddPaymentActivity">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <include layout="@layout/custom_toolbar"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                >
+                <Button
+                    android:id="@+id/btn_credit_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:layout_weight="0.5"
+                    android:textColor="@color/white"
+                    android:textAllCaps="false"
+                    android:text="@string/credit_card"
+                    android:background="@drawable/button_shape_black"
+                    android:layout_margin="10dp"
+                    />
+                <Button
+                    android:id="@+id/btn_paypal"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:layout_weight="0.5"
+                    android:layout_margin="10dp"
+                    android:text="@string/paypal"
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_black_border"
+                    />
+            </LinearLayout>
+
+          <include layout="@layout/layout_payment_details"></include>
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>
+</RelativeLayout>
