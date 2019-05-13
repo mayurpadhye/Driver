@@ -2,6 +2,11 @@ package com.ccube9.driver.home;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -44,6 +49,7 @@ import com.ccube9.driver.network.BaseUrl;
 import com.ccube9.driver.profile.ProfileActivity;
 import com.ccube9.driver.registration.ChooseRegistrationRoleActivity;
 import com.ccube9.driver.service.DriverLatLangService;
+import com.ccube9.driver.service.MyStartServiceReceiver;
 import com.ccube9.driver.util.CustomUtil;
 import com.ccube9.driver.util.PrefManager;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -82,6 +88,8 @@ import java.util.Map;
 public class HomeActivity extends AppCompatActivity implements
         OnMapReadyCallback {
     Toolbar toolbar;
+    Intent mServiceIntent;
+    private DriverLatLangService driverLatLangService;
     LinearLayout rl_drawer;
     private Switch sw_takeride;
     ImageView iv_menu, nv_user_profile;
@@ -102,13 +110,22 @@ public class HomeActivity extends AppCompatActivity implements
     Button btn_become_driver;
     private String Token;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         initView();
-        startService(new Intent(HomeActivity.this, DriverLatLangService.class));
+
+
+        driverLatLangService = new DriverLatLangService();
+        mServiceIntent = new Intent(this, driverLatLangService.getClass());
+        if (!isMyServiceRunning(driverLatLangService.getClass())) {
+            startService(mServiceIntent);
+        }
+
+      //  startService(new Intent(HomeActivity.this, DriverLatLangService.class));
         requestQueue = Volley.newRequestQueue(HomeActivity.this);
         FirebaseApp.initializeApp(this);
         Log.d("hgfhgh", PrefManager.getTakeRideStatus(HomeActivity.this));
@@ -217,10 +234,20 @@ public class HomeActivity extends AppCompatActivity implements
 //                getFragmentManager().beginTransaction();
 //        fragmentTransaction.add(R.id.main, mMapFragment);
 //        fragmentTransaction.commit();
-
+        //startAlert();
     }
 
-
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("Service status", "Running");
+                return true;
+            }
+        }
+        Log.i ("Service status", "Not running");
+        return false;
+    }
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
@@ -402,6 +429,8 @@ public class HomeActivity extends AppCompatActivity implements
         tv_ride_history = findViewById(R.id.tv_ride_history);
         tv_logout = findViewById(R.id.tv_logout);
         tv_support = findViewById(R.id.tv_support);
+
+
     }//initViewClose
 
     private void requestPermission() {
@@ -606,5 +635,21 @@ public class HomeActivity extends AppCompatActivity implements
         googleApiClient.disconnect();
 
         fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+
+    public void startAlert() {
+        int timeInSec = 2;
+
+        Intent intent = new Intent(this, MyStartServiceReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this.getApplicationContext(), 234, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeInSec * 1000), pendingIntent);
+        Toast.makeText(this, "Alarm set to after " + timeInSec  + " seconds",Toast.LENGTH_LONG).show();
+    }
+    @Override
+    protected void onDestroy() {
+        stopService(mServiceIntent);
+        super.onDestroy();
     }
 }

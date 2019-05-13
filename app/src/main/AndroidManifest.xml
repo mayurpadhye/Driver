@@ -23,7 +23,20 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:replace="android:icon">
+        <service
+            android:name=".service.TestJobService"
+            android:label="Word service"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
 
+        </service>
+        <receiver
+            android:name=".service.MyStartServiceReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="restartservice" />
+            </intent-filter>
+        </receiver>
         <activity android:name=".MyCar.MyCarActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -62,7 +75,8 @@
         <activity android:name=".login.LoginActivity" />
         <activity android:name=".profile.ProfileActivity" />
         <activity android:name=".profile.EditProfileActivity" />
-        <service android:name=".service.DriverLatLangService"/>
+        <service android:name=".service.DriverLatLangService"
+            android:enabled="true"/>
     </application>
 
 </manifest>
